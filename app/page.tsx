@@ -1,4 +1,6 @@
 import { supabase } from "@/lib/supabase";
+import { redirect } from "next/navigation";
+import { supabaseServer } from "@/lib/supabase-server";
 import CommunityFilter from "./CommunityFilter";
 
 
@@ -14,6 +16,10 @@ type SearchParams = {
 export default async function Page(
   props: { searchParams: Promise<SearchParams> } // <-- Promise
 ) {
+  const supabase = await supabaseServer();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) redirect("/login");
 
   // Fetch distinct community list (simple approach)
   const { data: communityRows, error: communityErr } = await supabase
